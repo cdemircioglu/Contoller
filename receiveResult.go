@@ -17,7 +17,7 @@ func failOnError(err error, msg string) {
 var chanNextLine chan string = make(chan string)
 var chanRegister chan chan string = make(chan chan string)
 var chanUnregister chan chan string = make(chan chan string)
-
+var conns []chan string = make([]chan string, 0, 0)
 
 func main() {
 	
