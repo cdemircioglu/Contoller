@@ -42,7 +42,7 @@ func main() {
 		var xmlmsg string 
 		xmlmsg = getMessage()
 		fmt.Println(xmlmsg)	
-		conn.Write([]byte(xmlmsg + "\n"))		
+		//conn.Write([]byte(xmlmsg + "\n"))		
 		
 	}
 	
