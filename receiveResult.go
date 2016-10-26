@@ -27,6 +27,8 @@ func main() {
 	// accept connection on port
 	//conn, _ := ln.Accept()
 
+	go service()
+	
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
@@ -37,16 +39,48 @@ func main() {
 	}
 
 	
-	for {	
+		
+
+		
+	
+	
+	
+}
+func service() {
+		for {
+				select {
+				case ch := <-chanRegister:
+					conns = append(conns, ch)
+					log.Println(len(conns), "active connection(s)")
+				case ch := <-chanUnregister:
+					found := false
+					for i, el := range conns {
+						if el == ch {
+							found = true
+							conns[i] = nil
+							conns = append(conns[:i], conns[i+1:]...)
+							break
+						}
+					}
+					if !found {
+						log.Println("Couldn't find channel to unregister!")
+					} else {
+						log.Println(len(conns), "active connection(s)")
+					}
+				//case str := <-chanNextLine:
+				//	for _, ch := range conns {
+				//		select {
+				//		case ch <- str: break
+				//		default: break
+				//		}
+				//	}
+				}
+			}
 
 		var xmlmsg string 
 		xmlmsg = getMessage()
 		fmt.Println(xmlmsg)	
 		//conn.Write([]byte(xmlmsg + "\n"))		
-		
-	}
-	
-	
 }
 
 func handleConn(conn net.Conn) {
