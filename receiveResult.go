@@ -4,6 +4,7 @@ import (
 	"log"
 	"fmt"
 	"net"
+	"time"
 	"github.com/streadway/amqp"
 )
 
@@ -16,6 +17,7 @@ func failOnError(err error, msg string) {
 
 var chanNextLine chan string = make(chan string)
 var chanRegister chan chan string = make(chan chan string)
+var chanUnregister chan chan string = make(chan chan string)
 
 func main() {
 	
