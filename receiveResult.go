@@ -20,19 +20,38 @@ func main() {
 	// listen on all interfaces
 	ln, _ := net.Listen("tcp", "localhost:8081")
 
-	// accept connection on port
-	conn, _ := ln.Accept()
 	
 	
 	for {	
+		// accept connection on port
+		conn, _ := ln.Accept()
+
 		var xmlmsg string 
 		xmlmsg = getMessage()
+		xmlmsg = Replace(xmlmsg,"'","")
 		fmt.Println(xmlmsg)	
 		conn.Write([]byte(xmlmsg + "\n"))		
+		
+		go handleConn(conn)
 	}
 	
 	
 }
+
+func handleConn(conn net.Conn) {
+	log.Println("Connection opened from", conn.RemoteAddr())
+	ch := make(chan string, 1000)
+	chanRegister <- ch
+	go doWrites(conn, ch)
+
+	buf := make([]byte, 1, 1)
+	conn.Read(buf)
+	chanUnregister <- ch
+	conn.Close()
+	close(ch)
+	log.Println("Connection closed from ", conn.RemoteAddr())
+}
+
 
 func getMessage() string {
 	var msg string	
