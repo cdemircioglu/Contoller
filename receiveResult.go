@@ -76,7 +76,7 @@ func getMessage() string {
 
 	}()
 
-	//log.Printf(" [*] Waiting for messages. To exit press CTRL+C -cd")
+	//log.Printf(" [*] Waiting for messages. To exit press CTRL+C -dc")
 	<-forever
 	return msg
 }
