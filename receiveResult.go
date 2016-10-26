@@ -28,6 +28,7 @@ func main() {
 	//conn, _ := ln.Accept()
 
 	go service()
+	go data()
 	
 	for {
 		conn, err := ln.Accept()
@@ -37,15 +38,20 @@ func main() {
 		}
 		go handleConn(conn)
 	}
-
-	
 		
-
-		
-	
-	
-	
 }
+func data() {
+		
+		for {
+			var xmlmsg string 
+			xmlmsg = getMessage()
+			fmt.Println(xmlmsg)
+			chanNextLine <- xmlmsg + "\n"
+			//conn.Write([]byte(xmlmsg + "\n"))					
+		}
+
+}
+
 func service() {
 		for {
 				select {
@@ -67,20 +73,16 @@ func service() {
 					} else {
 						log.Println(len(conns), "active connection(s)")
 					}
-				//case str := <-chanNextLine:
-				//	for _, ch := range conns {
-				//		select {
-				//		case ch <- str: break
-				//		default: break
-				//		}
-				//	}
+				case str := <-chanNextLine:
+					for _, ch := range conns {
+						select {
+						case ch <- str: break
+						default: break
+						}
+					}
 				}
 			}
 
-		var xmlmsg string 
-		xmlmsg = getMessage()
-		fmt.Println(xmlmsg)	
-		//conn.Write([]byte(xmlmsg + "\n"))		
 }
 
 func handleConn(conn net.Conn) {
