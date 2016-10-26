@@ -14,6 +14,8 @@ func failOnError(err error, msg string) {
 }
 
 
+var chanNextLine chan string = make(chan string)
+var chanRegister chan chan string = make(chan chan string)
 
 func main() {
 	
@@ -28,7 +30,6 @@ func main() {
 
 		var xmlmsg string 
 		xmlmsg = getMessage()
-		xmlmsg = Replace(xmlmsg,"'","")
 		fmt.Println(xmlmsg)	
 		conn.Write([]byte(xmlmsg + "\n"))		
 		
@@ -37,6 +38,22 @@ func main() {
 	
 	
 }
+
+func doWrites(conn net.Conn, ch chan string) {
+	for {
+		str, ok := <-ch
+		if !ok {
+			return
+		}
+		conn.SetWriteDeadline(time.Now().Add(30 * time.Second))
+		_, err := conn.Write([]byte(str))
+		if err != nil {
+			conn.Close()
+			return
+		}
+	}
+}
+
 
 func handleConn(conn net.Conn) {
 	log.Println("Connection opened from", conn.RemoteAddr())
