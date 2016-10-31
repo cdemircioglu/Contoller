@@ -6,6 +6,7 @@ import (
 	"net"
 	"time"
 	"github.com/streadway/amqp"
+	"strings"
 )
 
 func failOnError(err error, msg string) {
