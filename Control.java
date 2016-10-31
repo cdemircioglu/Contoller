@@ -305,9 +305,9 @@ public class Control {
 		    
 		    String MSISDNMessage = "<parameter><name>msisdn</name><value>"+ msisdn +"</value></parameter>"; //MSISDN XML
 		    String RunNumber = "<parameter><name>runnumber</name><value>" + runNumber + "</value></parameter>"; //runNumber XML
-		    String FinalMessage = xmlParameters.replace("</ShinnyParameters>", ""); //remove the close of xml
-		    FinalMessage = xmlParameters.replace("<ShinnyParameters>", "<ShinnyParameters><parameter><name>runtime</name><value>1000</value></parameter>"); //Run time is the time required to run TODO
-		    FinalMessage = FinalMessage + RunNumber + MSISDNMessage + "</ShinnyParameters>";   
+		    String RunTime = "<parameter><name>runtime</name><value>1000</value></parameter>"; //TODO run time
+		    String FinalMessage = xmlParameters.replace("</ShinnyParameters>", ""); //remove the close of xml		    
+		    FinalMessage = FinalMessage + RunNumber + RunTime + MSISDNMessage + "</ShinnyParameters>";   
 		    		    
 		    channel.basicPublish("", QUEUE_NAME, null, FinalMessage.getBytes("UTF-8"));
 		    System.out.println(" [x] Sent '" + FinalMessage + "'");
