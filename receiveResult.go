@@ -46,6 +46,7 @@ func data() {
 			var xmlmsg string 
 			xmlmsg = getMessage()
 			fmt.Println(xmlmsg)
+			xmlmsg = strings.Replace(xmlmsg,"|","\n",-1);
 			chanNextLine <- xmlmsg + "\n"
 			//conn.Write([]byte(xmlmsg + "\n"))					
 		}

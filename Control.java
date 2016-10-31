@@ -58,7 +58,7 @@ public class Control {
 		runNumber = dateFormat.format(cal.getTime());
 	}
 
-	public static void processXML(String xmlMsg) throws SAXException, IOException {
+	public static void processXML(String xmlMsg) throws SAXException, IOException, TimeoutException {
 		//Create the lists to hold parameters
 		List parameterName = new ArrayList();
 		List parameterValue = new ArrayList();
@@ -71,17 +71,17 @@ public class Control {
 		//Let's get the server count
 		String servercnt = parameterValue.get(parameterName.indexOf("servercnt")).toString();
 				
-		//One of the most important busines logic to continue work when just server count changed. 
+		//One of the most important business logic to continue work when just server count changed. 
 		if (!servercnt.equals(lastservercnt) && lastservercnt != "") //The user just changed the server count 
 		{
-			stopServer();			
+			//stopServer();			
 			startServer(servercnt);	
 			lastservercnt = servercnt; //Set the server count
 			return;
 		} else //The use has changed a parameter
 		{
 			clearMessageGeneric("workermsisdn"); //Clear the queue of workermsisdn
-			stopServer();			
+			//stopServer();			
 			startServer(servercnt);
 			lastservercnt = servercnt; //Set the server count
 		}	
@@ -90,22 +90,37 @@ public class Control {
 		createMessage(marketInterest);
 	}
 
-	public static void stopServer() {
-		//Clear the queue
-		for (int i = 1; i <= 20; i++)
-		{
-			clearMessageGeneric("workassign" + i); //Clear the queue of individuals
-			sendMessageGeneric("Stop", "workassign" + i); //Stop the workers
-		}
-	}
 
-	public static void startServer(String servercnt) {
-		//Start the server based on servercnt
-		for (int i = 1; i <= Integer.parseInt(servercnt); i++)
-		{
-			sendMessageGeneric("Run", "workassign" + i);
-		}
+	public static void startServer(String servercnt) throws IOException, TimeoutException {
+		    //Start the server based on servercnt
+			sendMessageExchangeGeneric(servercnt,"worknumber");			
 	}
+	
+	public static void sendMessageExchangeGeneric(String servercnt, String echangeName) throws IOException, TimeoutException
+	{
+		String EXCHANGE_NAME = echangeName;
+		ConnectionFactory factory = new ConnectionFactory();
+		
+		factory.setHost("hwlinux.cloudapp.net");
+		factory.setUsername("controller");
+		factory.setPassword("KaraburunCe2");
+		Connection connection = factory.newConnection();
+		connection = factory.newConnection();
+		Channel channel = connection.createChannel();
+		
+		channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+		
+	    String message = servercnt;
+
+	    channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
+	    System.out.println(" [x] Sent '" + message + "'");
+
+	    channel.close();
+	    connection.close();
+		
+	}
+	
+	
 
 	public static void createMessage(String marketInterest) {
 		//Create the result set of MSISDN		
@@ -227,7 +242,10 @@ public class Control {
 	        			setRunNumber();  //Set the run number
 	        			xmlParameters = xmlMsg; //Set the xml message
 	        	  		processXML(xmlMsg); //Process the xml message
-	          	  } catch (SAXException e) { }
+	          	  } catch (SAXException e) { } catch (TimeoutException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	        }
 	      };
 	      channel.basicConsume(QUEUE_NAME, true, consumer);
