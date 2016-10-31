@@ -43,6 +43,7 @@ public class Control {
 	static String runNumber = "0";
 	static String xmlParameters = "";
 	static String lastservercnt = "";
+	static int totalMSISDN = 0; 
 	
 	public static void main(String[] args) throws SAXException, IOException {		
 				
@@ -127,7 +128,7 @@ public class Control {
 		try{
         	Class.forName("com.mysql.jdbc.Driver");
             java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/testdata","root","KaraburunCe2");
-            PreparedStatement stmt = con.prepareStatement("SELECT DISTINCT MSISDN FROM src_xdr WHERE IAB_TIER1 = ? LIMIT 500");
+            PreparedStatement stmt = con.prepareStatement("SELECT DISTINCT MSISDN FROM src_xdr WHERE IAB_TIER1 = ?");
             stmt.setString(1,marketInterest);
 
             // Execute the query, and get a java resultset                         
@@ -137,6 +138,11 @@ public class Control {
             String msgContent = "";
             int i = 0; //Counter
           
+            // Get the total number of customers
+            rsMSISDN.last(); 
+            totalMSISDN = rsMSISDN.getRow();
+            rsMSISDN.beforeFirst();
+            
             //Before we create new messages based on the new parameter set, we need to clear the current queue
             clearMessage();
             
@@ -145,7 +151,7 @@ public class Control {
             {
                msgContent += rsMSISDN.getString("MSISDN") + ",";
                i++; //Count the records //Only 10 records at a time
-               if(i%10==0)
+               if(i%100==0)
                {
             	   msgContent = msgContent.substring(1, msgContent.length() - 1);
             	   //System.out.println(msgContent);
@@ -305,7 +311,7 @@ public class Control {
 		    
 		    String MSISDNMessage = "<parameter><name>msisdn</name><value>"+ msisdn +"</value></parameter>"; //MSISDN XML
 		    String RunNumber = "<parameter><name>runnumber</name><value>" + runNumber + "</value></parameter>"; //runNumber XML
-		    String RunTime = "<parameter><name>runtime</name><value>1000</value></parameter>"; //TODO run time
+		    String RunTime = "<parameter><name>runtime</name><value>"+totalMSISDN+"</value></parameter>"; //TODO run time
 		    String FinalMessage = xmlParameters.replace("</ShinnyParameters>", ""); //remove the close of xml		    
 		    FinalMessage = FinalMessage + RunNumber + RunTime + MSISDNMessage + "</ShinnyParameters>";   
 		    		    
