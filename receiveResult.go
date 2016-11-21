@@ -23,7 +23,7 @@ var conns []chan string = make([]chan string, 0, 0)
 func main() {
 	
 	// listen on all interfaces
-	ln, _ := net.Listen("tcp", "localhost:8081")
+	ln, _ := net.Listen("tcp", "localhost:8091")
 
 	// accept connection on port
 	//conn, _ := ln.Accept()
