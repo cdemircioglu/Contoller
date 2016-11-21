@@ -80,7 +80,9 @@ public class Control {
 	        java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/openroads","root","KaraburunCe2");
 	        PreparedStatement stmt = con.prepareStatement("SELECT MARKETINTERESTID,SPRAYPRAYUPTAKE FROM dim_marketinterest WHERE marketinterest = ?");
 	        stmt.setString(1,marketInterest);
-
+	        
+	        System.out.println("Market Interest '" + marketInterest + "'");
+	        
 	        // Execute the query, and get a java resultset                         
 	        ResultSet rsMARKETINTEREST = stmt.executeQuery();
 
