@@ -90,7 +90,6 @@ public class Control {
                 sprayPrayUptake = rsMARKETINTEREST.getString("SPRAYPRAYUPTAKE");
 	        }
 	        
-	        System.out.println("Market Interest '" + marketInterestID + "'");
 	        stmt.close();
             con.close();
 
@@ -162,7 +161,7 @@ public class Control {
         	Class.forName("com.mysql.jdbc.Driver");
             java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/openroads","root","KaraburunCe2");
             PreparedStatement stmt = con.prepareStatement("SELECT DISTINCT MSISDN FROM fct_marketinterest WHERE marketinterestID = ?");
-            stmt.setString(1,marketInterest);
+            stmt.setString(1,marketInterestID);
 
             // Execute the query, and get a java resultset                         
             ResultSet rsMSISDN = stmt.executeQuery();
