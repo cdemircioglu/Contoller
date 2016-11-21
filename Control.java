@@ -16,6 +16,7 @@ import java.io.StringReader;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
@@ -44,6 +45,9 @@ public class Control {
 	static String xmlParameters = "";
 	static String lastservercnt = "";
 	static int totalMSISDN = 0; 
+    static String marketInterestID = ""; 
+    static String sprayPrayUptake = "";
+
 	
 	public static void main(String[] args) throws SAXException, IOException {		
 				
@@ -59,7 +63,7 @@ public class Control {
 		runNumber = dateFormat.format(cal.getTime());
 	}
 
-	public static void processXML(String xmlMsg) throws SAXException, IOException, TimeoutException {
+	public static void processXML(String xmlMsg) throws SAXException, IOException, TimeoutException, SQLException {
 		//Create the lists to hold parameters
 		List parameterName = new ArrayList();
 		List parameterValue = new ArrayList();
@@ -69,6 +73,34 @@ public class Control {
 		
 		//Let's get the MSISDN list based on market interest		
 		String marketInterest = parameterValue.get(parameterName.indexOf("marketInterest")).toString();
+		
+		//AAAA SET MARKETINTERESTID & SPRAYANDPRAY
+    	try {
+			Class.forName("com.mysql.jdbc.Driver");
+	        java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/openroads","root","KaraburunCe2");
+	        PreparedStatement stmt = con.prepareStatement("SELECT MARKETINTERESTID,SPRAYPRAYUPTAKE FROM dim_marketinterest WHERE marketinterest = ?");
+	        stmt.setString(1,marketInterest);
+
+	        // Execute the query, and get a java resultset                         
+	        ResultSet rsMARKETINTEREST = stmt.executeQuery();
+
+	        while (rsMARKETINTEREST.next())
+	        {
+                marketInterestID = rsMARKETINTEREST.getString("MARKETINTERESTID");
+                sprayPrayUptake = rsMARKETINTEREST.getString("SPRAYPRAYUPTAKE");
+	        }
+	        
+	        stmt.close();
+            con.close();
+
+			
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		
 		//Let's get the server count
 		String servercnt = parameterValue.get(parameterName.indexOf("servercnt")).toString();
 				
@@ -102,7 +134,7 @@ public class Control {
 		String EXCHANGE_NAME = echangeName;
 		ConnectionFactory factory = new ConnectionFactory();
 		
-		factory.setHost("hwlinux.cloudapp.net");
+		factory.setHost("hwcontrol.cloudapp.net");
 		factory.setUsername("controller");
 		factory.setPassword("KaraburunCe2");
 		Connection connection = factory.newConnection();
@@ -127,8 +159,8 @@ public class Control {
 		//Create the result set of MSISDN		
 		try{
         	Class.forName("com.mysql.jdbc.Driver");
-            java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/testdata","root","KaraburunCe2");
-            PreparedStatement stmt = con.prepareStatement("SELECT DISTINCT MSISDN FROM src_xdr WHERE IAB_TIER1 = ?");
+            java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/openroads","root","KaraburunCe2");
+            PreparedStatement stmt = con.prepareStatement("SELECT DISTINCT MSISDN FROM fct_marketinterest WHERE marketinterestID = ?");
             stmt.setString(1,marketInterest);
 
             // Execute the query, and get a java resultset                         
@@ -227,7 +259,7 @@ public class Control {
 		try {
 		String QUEUE_NAME = "workorder";
 		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("hwlinux.cloudapp.net");
+		factory.setHost("hwcontrol.cloudapp.net");
 		factory.setUsername("controller");
 		factory.setPassword("KaraburunCe2");
 		Connection connection;		
@@ -251,6 +283,9 @@ public class Control {
 	          	  } catch (SAXException e) { } catch (TimeoutException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 	        }
 	      };
@@ -270,7 +305,7 @@ public class Control {
 			String QUEUE_NAME = "workermsisdn";
 			ConnectionFactory factory = new ConnectionFactory();
 			
-			factory.setHost("hwlinux.cloudapp.net");
+			factory.setHost("hwcontrol.cloudapp.net");
 			factory.setUsername("controller");
 			factory.setPassword("KaraburunCe2");
 			Connection connection;
@@ -300,7 +335,7 @@ public class Control {
 			String QUEUE_NAME = "workermsisdn";
 			ConnectionFactory factory = new ConnectionFactory();
 			
-			factory.setHost("hwlinux.cloudapp.net");
+			factory.setHost("hwcontrol.cloudapp.net");
 			factory.setUsername("controller");
 			factory.setPassword("KaraburunCe2");
 			Connection connection;
@@ -312,8 +347,12 @@ public class Control {
 		    String MSISDNMessage = "<parameter><name>msisdn</name><value>"+ msisdn +"</value></parameter>"; //MSISDN XML
 		    String RunNumber = "<parameter><name>runnumber</name><value>" + runNumber + "</value></parameter>"; //runNumber XML
 		    String RunTime = "<parameter><name>runtime</name><value>"+totalMSISDN+"</value></parameter>"; //TODO run time
+		    
+		    String MarketInterestID = "<parameter><name>marketinterestid</name><value>"+marketInterestID+"</value></parameter>"; //TODO run time
+		    String SprayPrayUptake = "<parameter><name>sprayprayuptake</name><value>"+sprayPrayUptake+"</value></parameter>"; //TODO run time
+		    
 		    String FinalMessage = xmlParameters.replace("</ShinnyParameters>", ""); //remove the close of xml		    
-		    FinalMessage = FinalMessage + RunNumber + RunTime + MSISDNMessage + "</ShinnyParameters>";   
+		    FinalMessage = FinalMessage + RunNumber + RunTime + MSISDNMessage + MarketInterestID + SprayPrayUptake +"</ShinnyParameters>";   
 		    		    
 		    channel.basicPublish("", QUEUE_NAME, null, FinalMessage.getBytes("UTF-8"));
 		    System.out.println(" [x] Sent '" + FinalMessage + "'");
@@ -337,7 +376,7 @@ public class Control {
 			String QUEUE_NAME = queueName;
 			ConnectionFactory factory = new ConnectionFactory();
 			
-			factory.setHost("hwlinux.cloudapp.net");
+			factory.setHost("hwcontrol.cloudapp.net");
 			factory.setUsername("controller");
 			factory.setPassword("KaraburunCe2");
 			Connection connection;
@@ -367,7 +406,7 @@ public class Control {
 			String QUEUE_NAME = queueName;
 			ConnectionFactory factory = new ConnectionFactory();
 			
-			factory.setHost("hwlinux.cloudapp.net");
+			factory.setHost("hwcontrol.cloudapp.net");
 			factory.setUsername("controller");
 			factory.setPassword("KaraburunCe2");
 			Connection connection;
