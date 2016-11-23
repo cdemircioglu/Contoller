@@ -34,7 +34,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 
-public class Control {
+public class Control implements Runnable {
 
 	/**
 	 * @param args
@@ -48,11 +48,34 @@ public class Control {
     static String marketInterestID = ""; 
     static String sprayPrayUptake = "";
 
+    private Thread t;
+	private String threadName;
+	   
+	public void start () {
+	      //System.out.println("Starting " +  threadName );
+	      if (t == null) {
+	         t = new Thread (this, threadName);
+	         t.start ();
+	      }
+	   }
 	
-	public static void main(String[] args) throws SAXException, IOException {		
-				
-		//Wait for the parameter message
-		receiveMessage();				        
+	Control( String name, int myvalue) {
+	      threadName = name;
+	   }
+    
+    
+	public void run() 
+	{		
+		
+		if (threadName == "T1" )
+        {
+        	System.out.println("Receiving the messages.");
+        	receiveMessage();
+        }
+        if (threadName == "T2" )
+        {	
+        	System.out.println("Query DB");        	     
+        }
         
 	}
 
@@ -123,7 +146,6 @@ public class Control {
 		createMessage(marketInterest);
 	}
 
-
 	public static void startServer(String servercnt) throws IOException, TimeoutException {
 		    //Start the server based on servercnt
 			sendMessageExchangeGeneric(servercnt,"worknumber");			
@@ -153,8 +175,6 @@ public class Control {
 		
 	}
 	
-	
-
 	public static void createMessage(String marketInterest) {
 		//Create the result set of MSISDN		
 		try{
@@ -273,20 +293,11 @@ public class Control {
 	        @Override
 	        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
 	            throws IOException {
-	          String xmlMsg = new String(body, "UTF-8");	          
-	          
-	          try {
-	        	  		System.out.println(xmlMsg);
-	        			setRunNumber();  //Set the run number
-	        			xmlParameters = xmlMsg; //Set the xml message
-	        	  		processXML(xmlMsg); //Process the xml message
-	          	  } catch (SAXException e) { } catch (TimeoutException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+	        		String xmlMsg = new String(body, "UTF-8");	          	          
+	        		System.out.println(xmlMsg); //Get the new message
+	        		setRunNumber();  //Set the run number
+	        		xmlParameters = xmlMsg; //Set the xml message
+	        		//processXML(xmlMsg); //Process the xml message
 	        }
 	      };
 	      channel.basicConsume(QUEUE_NAME, true, consumer);
@@ -327,7 +338,6 @@ public class Control {
 		
 	}
 
-	
 	public static void sendMessage(String msisdn)
 	{
 		try {
@@ -397,7 +407,6 @@ public class Control {
 	    	
 		
 	}
-
 	
 	public static void sendMessageGeneric(String msg, String queueName)
 	{
