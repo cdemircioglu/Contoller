@@ -84,13 +84,10 @@ public class Control implements Runnable {
         					if (!xmlParameters.equals(xmlParametersOld)) //Make sure we are receiving new parameters. 
         					{
         						System.out.println("Processing the XML message.");
-        						System.out.println("Current:" + xmlParameters);
-        						System.out.println("Old:" + xmlParameters);
-        						//processXML(xmlParameters);
         						xmlParametersOld = xmlParameters;
+        						processXML(xmlParameters);        						
         					}
-        					System.out.println("Waiting the XML message.");
-        					Thread.sleep(10000);
+        					Thread.sleep(1000);
         					
         				}
         				Thread.sleep(1000); 
@@ -234,6 +231,9 @@ public class Control implements Runnable {
             	   sendMessage(msgContent);
             	   msgContent = "";
                }
+               
+               if(!xmlParametersOld.equals(xmlParameters)) //If there is a new xml message stop sending immediately. 
+            		 break;
                
              }
             
