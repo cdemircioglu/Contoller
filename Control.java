@@ -43,6 +43,7 @@ public class Control implements Runnable {
 	 */
 	static String runNumber = "0";
 	static String xmlParameters = "";
+	static String xmlParametersOld = "";
 	static String lastservercnt = "";
 	static int totalMSISDN = 0; 
     static String marketInterestID = ""; 
@@ -80,9 +81,15 @@ public class Control implements Runnable {
         		try {
         				if(xmlParameters != "")	
         				{
-        					System.out.println("Processing the XML message.");
-        					//processXML(xmlParameters);
+        					if (xmlParameters != xmlParametersOld) //Make sure we are receiving new parameters. 
+        					{
+        						System.out.println("Processing the XML message.");
+        						//processXML(xmlParameters);
+        						xmlParametersOld = xmlParameters;
+        					}
+        					System.out.println("Waiting the XML message.");
         					Thread.sleep(10000);
+        					
         				}
         				Thread.sleep(1000); 
         					
