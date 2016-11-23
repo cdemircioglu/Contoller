@@ -233,7 +233,7 @@ public class Control implements Runnable {
                }
                
                if(!xmlParametersOld.equals(xmlParameters)) //If there is a new xml message stop sending immediately. 
-            		 break;
+            	   rsMSISDN.last();
                
              }
             
