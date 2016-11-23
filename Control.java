@@ -84,6 +84,8 @@ public class Control implements Runnable {
         					if (xmlParameters != xmlParametersOld) //Make sure we are receiving new parameters. 
         					{
         						System.out.println("Processing the XML message.");
+        						System.out.println("Current:" + xmlParameters);
+        						System.out.println("Old:" + xmlParameters);
         						//processXML(xmlParameters);
         						xmlParametersOld = xmlParameters;
         					}
