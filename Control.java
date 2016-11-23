@@ -74,7 +74,22 @@ public class Control implements Runnable {
         }
         if (threadName == "T2" )
         {	
-        	System.out.println("Query DB");        	     
+        	System.out.println("Query DB");
+        	while (true) //Loop indefinetly
+        	{	
+        		try {
+        				if(xmlParameters != "")	
+        				{
+        					System.out.println("Processing the XML message.");
+        					//processXML(xmlParameters);
+        					Thread.sleep(10000);
+        				}
+        				Thread.sleep(1000); 
+        					
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+        	}
         }
         
 	}
