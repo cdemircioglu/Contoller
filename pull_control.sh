@@ -5,4 +5,3 @@ git -C ~/control/ merge origin/master
 sed -i -e 's/workermsisdn/workermsisdn_test/g' Control.java
 sed -i -e 's/workermsisdn/worknumber_test/g' Control.java
 sed -i -e 's/workermsisdn/workorder_test/g' Control.java
-chmod 755 ~/control/pull_control.sh
