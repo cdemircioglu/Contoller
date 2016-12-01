@@ -19,6 +19,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -106,6 +108,17 @@ public class Control implements Runnable {
 		Calendar cal = Calendar.getInstance();
 		runNumber = dateFormat.format(cal.getTime());
 	}
+	
+	 
+	  public void asynchCallDBStoredProcedure() {
+	        //creates a DB thread pool
+	        this.taskExecutor.execute(new Runnable() {
+	            @Override
+	            public void run() {
+	                //call callDBStoredProcedure()
+	            }
+	        });
+	  }
 
 	public static void processXML(String xmlMsg) throws SAXException, IOException, TimeoutException, SQLException {
 		//Create the lists to hold parameters
@@ -215,6 +228,29 @@ public class Control implements Runnable {
             rsMSISDN.last(); 
             totalMSISDN = rsMSISDN.getRow();
             rsMSISDN.beforeFirst();
+
+            // Call the stored procedure
+    		try {
+    			Class.forName("com.mysql.jdbc.Driver");
+    	        java.sql.Connection conn = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/openroads","root","KaraburunCe2");
+    	        PreparedStatement stmtt = conn.prepareStatement("CALL spc_marketinterest()");
+    	        
+    	        ExecutorService executor = Executors.newSingleThreadExecutor();
+    	        executor.submit(() -> {
+    	            try {
+    					stmtt.execute();
+    				} catch (SQLException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				}
+    	        });
+    	        
+    		
+    		} catch (ClassNotFoundException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+
             
             //Before we create new messages based on the new parameter set, we need to clear the current queue
             clearMessage();
