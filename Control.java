@@ -228,29 +228,6 @@ public class Control implements Runnable {
             rsMSISDN.last(); 
             totalMSISDN = rsMSISDN.getRow();
             rsMSISDN.beforeFirst();
-
-            // Call the stored procedure
-    		try {
-    			Class.forName("com.mysql.jdbc.Driver");
-    	        java.sql.Connection conn = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/openroads","root","KaraburunCe2");
-    	        PreparedStatement stmtt = conn.prepareStatement("CALL spc_marketinterest()");
-    	        
-    	        ExecutorService executor = Executors.newSingleThreadExecutor();
-    	        executor.submit(() -> {
-    	            try {
-    					stmtt.execute();
-    				} catch (SQLException e) {
-    					// TODO Auto-generated catch block
-    					e.printStackTrace();
-    				}
-    	        });
-    	        
-    		
-    		} catch (ClassNotFoundException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		}
-
             
             //Before we create new messages based on the new parameter set, we need to clear the current queue
             clearMessage();
