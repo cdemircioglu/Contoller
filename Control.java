@@ -110,12 +110,23 @@ public class Control implements Runnable {
 	}
 	
 	 
-	  public void asynchCallDBStoredProcedure() {
+	  public static void asynchCallDBStoredProcedure() {
+		  	ExecutorService executor = Executors.newSingleThreadExecutor();
+
 	        //creates a DB thread pool
-	        this.taskExecutor.execute(new Runnable() {
+		  	executor.execute(new Runnable() {
 	            @Override
 	            public void run() {
-	                //call callDBStoredProcedure()
+	    			try {
+						Class.forName("com.mysql.jdbc.Driver");
+		    	        java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/openroads","root","KaraburunCe2");
+		    	        PreparedStatement stmt = con.prepareStatement("CALL spc_marketinterest()");
+    					stmt.execute();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
 	            }
 	        });
 	  }
@@ -231,6 +242,9 @@ public class Control implements Runnable {
             
             //Before we create new messages based on the new parameter set, we need to clear the current queue
             clearMessage();
+            
+            //Call the async stored procedure
+            asynchCallDBStoredProcedure();
             
             // Iterate through the java resultset
             while (rsMSISDN.next())
