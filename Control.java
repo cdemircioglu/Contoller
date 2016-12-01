@@ -117,26 +117,26 @@ public class Control implements Runnable {
 		  	executor.execute(new Runnable() {
 	            @Override
 	            public void run() {
-	    			try {
-						Class.forName("com.mysql.jdbc.Driver");
-		    	        java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/openroads","root","KaraburunCe2");
-		    	        PreparedStatement stmt = con.prepareStatement("CALL spc_marketinterest(11)");
-    					stmt.execute();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-					    System.out.println(" [x] Sent '" + e.getMessage() + "'");
-					    System.out.println(" AAAA ");
-					    System.out.println(" AAAA ");
-					    System.out.println(" AAAA ");
-					    System.out.println(" AAAA ");
-					    System.out.println(" AAAA ");
-					    System.out.println(" AAAA ");
-					    System.out.println(" AAAA ");
-					    System.out.println(" AAAA ");
-					    System.out.println(" AAAA ");
-					    
-
-					}
+	            	do {	            			            
+		    			try {
+							Class.forName("com.mysql.jdbc.Driver");
+			    	        java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/openroads","root","KaraburunCe2");
+			    	        PreparedStatement stmt = con.prepareStatement("CALL spc_marketinterest(11)");
+	    					stmt.execute();
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+						    System.out.println(" [x] Sent '" + e.getMessage() + "'");
+						    System.out.println(" AAA ");
+						    System.out.println(" AAA ");
+						    System.out.println(" AAA ");
+						    System.out.println(" AAA ");
+						    System.out.println(" AAA ");
+						    System.out.println(" AAA ");
+						    
+						    if (e.getMessage().equals("Query execution was interrupted"))
+						     continue;					 
+							}
+	            	} while (false);
 
 	            }
 	        });
