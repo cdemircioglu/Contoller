@@ -124,7 +124,18 @@ public class Control implements Runnable {
     					stmt.execute();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+					    System.out.println(" [x] Sent '" + e.getMessage() + "'");
+					    System.out.println(" AAAA ");
+					    System.out.println(" AAAA ");
+					    System.out.println(" AAAA ");
+					    System.out.println(" AAAA ");
+					    System.out.println(" AAAA ");
+					    System.out.println(" AAAA ");
+					    System.out.println(" AAAA ");
+					    System.out.println(" AAAA ");
+					    System.out.println(" AAAA ");
+					    
+
 					}
 
 	            }
