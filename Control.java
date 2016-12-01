@@ -120,7 +120,7 @@ public class Control implements Runnable {
 	    			try {
 						Class.forName("com.mysql.jdbc.Driver");
 		    	        java.sql.Connection con = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/openroads","root","KaraburunCe2");
-		    	        PreparedStatement stmt = con.prepareStatement("CALL spc_marketinterest()");
+		    	        PreparedStatement stmt = con.prepareStatement("CALL spc_marketinterest(11)");
     					stmt.execute();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
